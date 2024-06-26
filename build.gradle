@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.1'
 	id 'io.spring.dependency-management' version '1.1.5'
+	id 'org.openapi.generator' version '7.5.0'
 }
 
 group = 'andrej.cuscak'
@@ -13,6 +14,21 @@ java {
 	}
 }
 
+openApiGenerate {
+	verbose = false
+	generatorName = "spring"
+	inputSpec = "${rootDir}/src/main/resources/static/dms-api.json"
+	outputDir = "${rootDir}/build/openapi_generated"
+	configOptions = [
+			useSpringBoot3   : "true",
+			useSpringController : "true",
+			apiPackage       : "andrej.cuscak.dms.api",
+			modelPackage     : "andrej.cuscak.dms.model",
+			invokerPackage   : "andrej.cuscak.dms",
+			configPackage    : "andrej.cuscak.dms.config"
+	]
+}
+
 repositories {
 	mavenCentral()
 }
@@ -21,6 +37,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
