@@ -2,10 +2,8 @@ package andrej.cuscak.dms.controller;
 
 import andrej.cuscak.dms.model.Folder;
 import andrej.cuscak.dms.service.FolderService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +25,15 @@ public class FolderController {
     @GetMapping("/parent/{id}")
     public List<Folder> findAllByParent(@PathVariable("id") Long id){
         return folderService.findAllByParent(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFolder(@PathVariable("id") Long id){
+        boolean isDeleted = folderService.deleteFolder(id);
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -76,4 +76,13 @@ public class DocumentService {
 
         return documentRepository.save(doc);
     }
+
+    public boolean deleteDocument(Long id){
+        if (documentRepository.existsById(id)) {
+            documentRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

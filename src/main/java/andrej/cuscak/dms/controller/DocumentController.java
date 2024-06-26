@@ -47,4 +47,14 @@ public class DocumentController {
                 HttpStatus.CREATED
         );
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id) {
+        boolean isDeleted = documentService.deleteDocument(id);
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

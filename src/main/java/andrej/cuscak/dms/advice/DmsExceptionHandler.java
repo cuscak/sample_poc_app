@@ -29,4 +29,9 @@ public class DmsExceptionHandler {
     public ResponseEntity<String> handleEntityNotFoundException(NoSuchElementException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(FolderDeletionException.class)
+    public ResponseEntity<String> handleFolderDeletionException(FolderDeletionException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }

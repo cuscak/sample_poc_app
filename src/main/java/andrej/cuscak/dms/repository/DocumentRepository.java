@@ -20,4 +20,7 @@ public interface DocumentRepository extends ListCrudRepository<Document, Long> {
     List<Document> findAllByOwner(Long id);
 
     List<Document> findAllByFolder(Long id);
+
+    @Query("SELECT COUNT(*) > 0 FROM document WHERE folder = :folderId")
+    boolean existsByFolderId(Long folderId);
 }
