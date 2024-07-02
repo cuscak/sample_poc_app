@@ -36,6 +36,10 @@ public class FolderService {
             throw new FolderDeletionException("Cannot delete folder because it contains documents.");
         }
 
+        if (folderRepository.isParent(id)) {
+            throw new FolderDeletionException("Cannot delete folder because it contains other folders.");
+        }
+
         if (folderRepository.existsById(id)) {
             folderRepository.deleteById(id);
             return true;
