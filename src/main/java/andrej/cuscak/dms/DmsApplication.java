@@ -19,7 +19,7 @@ public class DmsApplication {
 		SpringApplication.run(DmsApplication.class, args);
 	}
 
-	@Bean
+	//@Bean
 	CommandLineRunner commandLineRunner(
 			DocumentRepository documentRepository,
 			OwnerRepository ownerRepository,

@@ -32,6 +32,10 @@ public class FolderService {
     }
 
     public boolean deleteFolder(Long id) {
+        if (!folderRepository.existsById(id)) {
+            return false; // Folder doesn't exist
+        }
+
         if (documentRepository.existsByFolderId(id)) {
             throw new FolderDeletionException("Cannot delete folder because it contains documents.");
         }
@@ -40,11 +44,7 @@ public class FolderService {
             throw new FolderDeletionException("Cannot delete folder because it contains other folders.");
         }
 
-        if (folderRepository.existsById(id)) {
-            folderRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+        folderRepository.deleteById(id);
+        return true;
     }
 }
