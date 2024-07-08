@@ -55,18 +55,18 @@ public class DocumentService {
                 documentcreationDto.getDocumentType()
         );
 
-        Optional<Owner> owner_entity = ownerService.findOwnerById(documentcreationDto.getOwnerId());
-        if (owner_entity.isEmpty()){
+        Optional<Owner> ownerEntity = ownerService.findOwnerById(documentcreationDto.getOwnerId());
+        if (ownerEntity.isEmpty()){
             throw new NoSuchElementException("Owner with id " + documentcreationDto.getOwnerId() +  " is not present");
         }
 
-        Optional<Folder> folder_entity = folderService.findFolderById(documentcreationDto.getFolderId());
-        if (folder_entity.isEmpty()){
+        Optional<Folder> folderEntity = folderService.findFolderById(documentcreationDto.getFolderId());
+        if (folderEntity.isEmpty()){
             throw new NoSuchElementException("Folder with id " + documentcreationDto.getFolderId() +  " is not present");
         }
 
-        AggregateReference<Owner, Long> owner = AggregateReference.to(owner_entity.get().id());
-        AggregateReference<Folder, Long> folder = AggregateReference.to(folder_entity.get().id());
+        AggregateReference<Owner, Long> owner = AggregateReference.to(ownerEntity.get().id());
+        AggregateReference<Folder, Long> folder = AggregateReference.to(folderEntity.get().id());
 
         Document doc = new Document(null,
                 documentcreationDto.getTitle(),
@@ -84,5 +84,27 @@ public class DocumentService {
         } else {
             return false;
         }
+    }
+
+    public Document updateDocument(Document updatedDocument) {
+        //check if references exist
+        Optional<Owner> ownerEntity = ownerService.findOwnerById(updatedDocument.owner().getId());
+        if (ownerEntity.isEmpty()){
+            throw new NoSuchElementException("Owner with id " + updatedDocument.owner().getId() +  " is not present");
+        }
+
+        Optional<Folder> folderEntity = folderService.findFolderById(updatedDocument.folder().getId());
+        if (folderEntity.isEmpty()){
+            throw new NoSuchElementException("Folder with id " + updatedDocument.folder().getId() +  " is not present");
+        }
+
+        //todo meta validations
+        //update updatedOn
+        DocumentMetaData updatedMeta = updatedDocument.metaData().withUpdatedOn(LocalDateTime.now());
+
+        Document updatedDocMeta = updatedDocument.withMetaData(updatedMeta);
+
+
+        return documentRepository.save(updatedDocMeta);
     }
 }

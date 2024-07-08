@@ -41,10 +41,18 @@ public class DocumentController {
     }
 
     @PostMapping
-        public ResponseEntity<Document> createDocument(@RequestBody @Valid DocumentCreateDto documentcreationDto){
+    public ResponseEntity<Document> createDocument(@RequestBody @Valid DocumentCreateDto newDocument){
         return new ResponseEntity<>(
-                documentService.createDocument(documentcreationDto),
+                documentService.createDocument(newDocument),
                 HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/{documentId}")
+    public ResponseEntity<Document> updateDocument(@PathVariable Long documentId, @RequestBody Document updatedDocument) {
+        return new ResponseEntity<>(
+                documentService.updateDocument(updatedDocument),
+                HttpStatus.OK
         );
     }
 

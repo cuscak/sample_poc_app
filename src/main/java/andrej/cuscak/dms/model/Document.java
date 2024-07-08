@@ -11,4 +11,7 @@ public record Document(
         AggregateReference<Owner, Long> owner,
         AggregateReference<Folder, Long> folder
 ) {
+    public Document withMetaData(DocumentMetaData metaData) {
+        return new Document(documentId, title, metaData, owner, folder);
+    }
 }
