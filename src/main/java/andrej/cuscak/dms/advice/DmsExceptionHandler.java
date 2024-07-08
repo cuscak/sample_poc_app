@@ -30,8 +30,9 @@ public class DmsExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(FolderDeletionException.class)
-    public ResponseEntity<String> handleFolderDeletionException(FolderDeletionException ex) {
+    @ExceptionHandler({FolderDeletionException.class, ParentFolderNotFoundException.class})
+    public ResponseEntity<String> handleFolderExceptions(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
+
 }

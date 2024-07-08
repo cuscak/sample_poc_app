@@ -1,9 +1,12 @@
 package andrej.cuscak.dms.service;
 
 import andrej.cuscak.dms.advice.FolderDeletionException;
+import andrej.cuscak.dms.advice.ParentFolderNotFoundException;
 import andrej.cuscak.dms.model.Folder;
+import andrej.cuscak.dms.model.dto.FolderCreateDto;
 import andrej.cuscak.dms.repository.DocumentRepository;
 import andrej.cuscak.dms.repository.FolderRepository;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,5 +49,19 @@ public class FolderService {
 
         folderRepository.deleteById(id);
         return true;
+    }
+
+    public Folder createFolder(FolderCreateDto newFolder) {
+        AggregateReference<Folder, Long> parentRef = null;
+        if(newFolder.parent().isPresent()) {
+            Long parentId = newFolder.parent().get();
+            Folder parentFolder = folderRepository.findById(parentId).orElseThrow(
+                    () -> new ParentFolderNotFoundException("No such parent folder")
+            );
+            parentRef = AggregateReference.to(parentFolder.id());
+        }
+
+        Folder folder = new Folder(null, newFolder.name(), parentRef);
+        return folderRepository.save(folder);
     }
 }

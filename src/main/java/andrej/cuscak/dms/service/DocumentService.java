@@ -4,7 +4,7 @@ import andrej.cuscak.dms.model.Document;
 import andrej.cuscak.dms.model.DocumentMetaData;
 import andrej.cuscak.dms.model.Folder;
 import andrej.cuscak.dms.model.Owner;
-import andrej.cuscak.dms.model.dto.DocumentCreationDto;
+import andrej.cuscak.dms.model.dto.DocumentCreateDto;
 import andrej.cuscak.dms.repository.DocumentRepository;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class DocumentService {
         return documentRepository.findAllByFolder(id);
     }
 
-    public Document createDocument(DocumentCreationDto documentcreationDto){
+    public Document createDocument(DocumentCreateDto documentcreationDto){
         DocumentMetaData meta = new DocumentMetaData(
                 LocalDateTime.now(),
                 null,

@@ -1,7 +1,7 @@
 package andrej.cuscak.dms.controller;
 
 import andrej.cuscak.dms.model.Document;
-import andrej.cuscak.dms.model.dto.DocumentCreationDto;
+import andrej.cuscak.dms.model.dto.DocumentCreateDto;
 import andrej.cuscak.dms.service.DocumentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,7 @@ public class DocumentController {
     }
 
     @PostMapping
-    public ResponseEntity<Document> createDocument(@RequestBody @Valid DocumentCreationDto documentcreationDto){
+        public ResponseEntity<Document> createDocument(@RequestBody @Valid DocumentCreateDto documentcreationDto){
         return new ResponseEntity<>(
                 documentService.createDocument(documentcreationDto),
                 HttpStatus.CREATED

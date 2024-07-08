@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public class DocumentCreationDto {
+public class DocumentCreateDto {
     @NotBlank(message = "Document must have a title")
     private String title;
     private String description;
@@ -17,7 +17,7 @@ public class DocumentCreationDto {
     private Long folderId;
     private DocumentTypes documentType;
 
-    public DocumentCreationDto(String title, String description, Integer size, Long ownerId, Long folderId, DocumentTypes documentType) {
+    public DocumentCreateDto(String title, String description, Integer size, Long ownerId, Long folderId, DocumentTypes documentType) {
         this.title = title;
         this.description = description;
         this.size = size;

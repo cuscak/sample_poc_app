@@ -1,7 +1,10 @@
 package andrej.cuscak.dms.controller;
 
 import andrej.cuscak.dms.model.Folder;
+import andrej.cuscak.dms.model.dto.FolderCreateDto;
 import andrej.cuscak.dms.service.FolderService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +28,14 @@ public class FolderController {
     @GetMapping("/parent/{id}")
     public List<Folder> findAllByParent(@PathVariable("id") Long id){
         return folderService.findAllByParent(id);
+    }
+
+    @PostMapping
+    public ResponseEntity<Folder> createFolder(@RequestBody @Valid FolderCreateDto newFolder) {
+        return new ResponseEntity<>(
+                folderService.createFolder(newFolder),
+                HttpStatus.CREATED
+        );
     }
 
     @DeleteMapping("/{id}")
