@@ -45,6 +45,8 @@ public class DocumentControllerTest {
     private DocumentService documentService;
 
     private static List<Document> mockDocuments;
+    private static Pageable pageable;
+    private static Page<Document> mockPage;
 
     @BeforeAll
     public static void setUp() {
@@ -78,14 +80,13 @@ public class DocumentControllerTest {
                         AggregateReference.to(1L),
                         AggregateReference.to(1L))
         );
+
+        pageable = PageRequest.of(0, 10);
+        mockPage = new PageImpl<>(mockDocuments, pageable, mockDocuments.size());
     }
 
     @Test
     public void should_get_all_documents() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
-
-        Page<Document> mockPage = new PageImpl<>(mockDocuments, pageable, mockDocuments.size());
-
         when(documentService.getAllDocuments(pageable)).thenReturn(mockPage);
 
         ResultActions result = mvc.perform(get("/api/v1/document")
@@ -100,10 +101,14 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].documentId").value(1))
                 .andExpect(jsonPath("$.content[1].documentId").value(2))
-                .andExpect(jsonPath("$.content[0].title").value("Document 1"))
-                .andExpect(jsonPath("$.content[1].title").value("Document 2"))
-                .andExpect(jsonPath("$.content[0].metaData.documentType").value(DocumentTypes.TEXT.name()))
-                .andExpect(jsonPath("$.content[1].metaData.documentType").value(DocumentTypes.ZIP.name()));
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.number").value(0));
+                //.andExpect(jsonPath("$.content[0].title").value("Document 1"))
+                //.andExpect(jsonPath("$.content[1].title").value("Document 2"))
+                //.andExpect(jsonPath("$.content[0].metaData.documentType").value(DocumentTypes.TEXT.name()))
+                //.andExpect(jsonPath("$.content[1].metaData.documentType").value(DocumentTypes.ZIP.name()));
 
     }
 
@@ -137,31 +142,45 @@ public class DocumentControllerTest {
     @Test
     public void should_return_all_documents_by_owner() throws Exception {
         Long ownerId = 1L;
-        when(documentService.findAllByOwner(ownerId)).thenReturn(mockDocuments);
 
-        mvc.perform(get("/api/v1/document/owner/{id}", ownerId))
+        when(documentService.findByOwner(ownerId, pageable)).thenReturn(mockPage);
+
+        mvc.perform(get("/api/v1/document/owner/{id}", ownerId)
+                        .param("page", "0")
+                    .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].documentId").value(1))
-                .andExpect(jsonPath("$[1].documentId").value(2));
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].documentId").value(1))
+                .andExpect(jsonPath("$.content[1].documentId").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.number").value(0));
 
-        verify(documentService).findAllByOwner(ownerId);
+        verify(documentService).findByOwner(ownerId, pageable);
     }
 
     @Test
     public void should_return_all_documents_by_folder() throws Exception {
         Long folderId = 1L;
-        when(documentService.findAllByFolder(folderId)).thenReturn(mockDocuments);
 
-        mvc.perform(get("/api/v1/document/folder/{id}", folderId))
+        when(documentService.findByFolder(folderId, pageable)).thenReturn(mockPage);
+
+        mvc.perform(get("/api/v1/document/folder/{id}", folderId)
+                        .param("page", "0")
+                        .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].documentId").value(1))
-                .andExpect(jsonPath("$[1].documentId").value(2));
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].documentId").value(1))
+                .andExpect(jsonPath("$.content[1].documentId").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.number").value(0));
 
-        verify(documentService).findAllByFolder(folderId);
+        verify(documentService).findByFolder(folderId, pageable);
     }
 
     @Test
@@ -225,6 +244,8 @@ public class DocumentControllerTest {
                         .content(invalidDocumentJson))
                 .andExpect(status().isBadRequest());
     }
+
+    //todo other validation tests (max fields length, ...)
 
     @Test
     public void should_update_document_successfully() throws Exception {

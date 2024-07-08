@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -42,13 +41,13 @@ public class DocumentController {
     }
 
     @GetMapping("/owner/{id}")
-    public List<Document> findAllByOwner(@PathVariable("id") Long id){
-        return documentService.findAllByOwner(id);
+    public Page<Document> findByOwner(@PathVariable("id") Long id, Pageable pageable){
+        return documentService.findByOwner(id, pageable);
     }
 
     @GetMapping("/folder/{id}")
-    public List<Document> findAllByFolder(@PathVariable("id") Long id){
-        return documentService.findAllByFolder(id);
+    public Page<Document> findAllByFolder(@PathVariable("id") Long id, Pageable pageable){
+        return documentService.findByFolder(id, pageable);
     }
 
     @PostMapping

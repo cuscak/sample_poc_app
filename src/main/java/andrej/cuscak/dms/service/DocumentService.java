@@ -12,7 +12,6 @@ import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -32,7 +31,7 @@ public class DocumentService {
         return documentRepository.findDocumentByDocumentId(id);
     }
 
-    public List<Document> findDocumentByTitle(String title){
+    public Document findDocumentByTitle(String title){
         return documentRepository.findByTitle(title);
     }
 
@@ -40,38 +39,38 @@ public class DocumentService {
         return documentRepository.findAll(pageable);
     }
 
-    public List<Document> findAllByOwner(Long id) {
-        return documentRepository.findAllByOwner(id);
+    public Page<Document> findByOwner(Long id, Pageable pageable) {
+        return documentRepository.findByOwner(id, pageable);
     }
 
-    public List<Document> findAllByFolder(Long id) {
-        return documentRepository.findAllByFolder(id);
+    public Page<Document> findByFolder(Long id, Pageable pageable) {
+        return documentRepository.findByFolder(id, pageable);
     }
 
-    public Document createDocument(DocumentCreateDto documentcreationDto){
+    public Document createDocument(DocumentCreateDto documentCreateDto){
         DocumentMetaData meta = new DocumentMetaData(
                 LocalDateTime.now(),
                 null,
-                documentcreationDto.getDescription(),
-                documentcreationDto.getSize(),
-                documentcreationDto.getDocumentType()
+                documentCreateDto.getDescription(),
+                documentCreateDto.getSize(),
+                documentCreateDto.getDocumentType()
         );
 
-        Optional<Owner> ownerEntity = ownerService.findOwnerById(documentcreationDto.getOwnerId());
+        Optional<Owner> ownerEntity = ownerService.findOwnerById(documentCreateDto.getOwnerId());
         if (ownerEntity.isEmpty()){
-            throw new NoSuchElementException("Owner with id " + documentcreationDto.getOwnerId() +  " is not present");
+            throw new NoSuchElementException("Owner with id " + documentCreateDto.getOwnerId() +  " is not present");
         }
 
-        Optional<Folder> folderEntity = folderService.findFolderById(documentcreationDto.getFolderId());
+        Optional<Folder> folderEntity = folderService.findFolderById(documentCreateDto.getFolderId());
         if (folderEntity.isEmpty()){
-            throw new NoSuchElementException("Folder with id " + documentcreationDto.getFolderId() +  " is not present");
+            throw new NoSuchElementException("Folder with id " + documentCreateDto.getFolderId() +  " is not present");
         }
 
         AggregateReference<Owner, Long> owner = AggregateReference.to(ownerEntity.get().id());
         AggregateReference<Folder, Long> folder = AggregateReference.to(folderEntity.get().id());
 
         Document doc = new Document(null,
-                documentcreationDto.getTitle(),
+                documentCreateDto.getTitle(),
                 meta,
                 owner,
                 folder);
