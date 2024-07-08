@@ -6,6 +6,8 @@ import andrej.cuscak.dms.model.Folder;
 import andrej.cuscak.dms.model.Owner;
 import andrej.cuscak.dms.model.dto.DocumentCreateDto;
 import andrej.cuscak.dms.repository.DocumentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +36,8 @@ public class DocumentService {
         return documentRepository.findByTitle(title);
     }
 
-    public List<Document> getAllDocuments(){
-        return documentRepository.findAll();
+    public Page<Document> getAllDocuments(Pageable pageable){
+        return documentRepository.findAll(pageable);
     }
 
     public List<Document> findAllByOwner(Long id) {

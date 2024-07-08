@@ -4,6 +4,8 @@ import andrej.cuscak.dms.model.Folder;
 import andrej.cuscak.dms.model.dto.FolderCreateDto;
 import andrej.cuscak.dms.service.FolderService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,8 @@ public class FolderController {
     }
 
     @GetMapping
-    public List<Folder> findAll(){
-        return folderService.findAll();
+    public Page<Folder> findAll(Pageable pageable){
+        return folderService.findAll(pageable);
     }
 
     @GetMapping("/parent/{id}")

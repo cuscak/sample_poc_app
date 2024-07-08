@@ -4,11 +4,15 @@ import andrej.cuscak.dms.model.Document;
 import andrej.cuscak.dms.model.dto.DocumentCreateDto;
 import andrej.cuscak.dms.service.DocumentService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/document")
@@ -21,13 +25,20 @@ public class DocumentController {
     }
 
     @GetMapping
-    public List<Document> getAllDocuments(){
-        return documentService.getAllDocuments();
+    public Page<Document> getAllDocuments(Pageable pageable){
+        return documentService.getAllDocuments(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Document> findDocumentById(@PathVariable("id") Long id){
-        return ResponseEntity.of(documentService.findDocumentById(id));
+    public Document findDocumentById(@PathVariable("id") Long id){
+        Optional<Document> doc = documentService.findDocumentById(id);
+        if(doc.isPresent()){
+            return doc.get();
+        } else {
+            throw new NoSuchElementException("Document not Found");
+        }
+
+        //return ResponseEntity.of(documentService.findDocumentById(id));
     }
 
     @GetMapping("/owner/{id}")

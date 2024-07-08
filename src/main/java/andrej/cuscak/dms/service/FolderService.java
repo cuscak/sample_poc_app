@@ -6,6 +6,8 @@ import andrej.cuscak.dms.model.Folder;
 import andrej.cuscak.dms.model.dto.FolderCreateDto;
 import andrej.cuscak.dms.repository.DocumentRepository;
 import andrej.cuscak.dms.repository.FolderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +24,8 @@ public class FolderService {
         this.documentRepository = documentRepository;
     }
 
-    public List<Folder> findAll(){
-        return folderRepository.findAll();
+    public Page<Folder> findAll(Pageable pageable) {
+        return folderRepository.findAll(pageable);
     }
 
     public List<Folder> findAllByParent(Long id){
