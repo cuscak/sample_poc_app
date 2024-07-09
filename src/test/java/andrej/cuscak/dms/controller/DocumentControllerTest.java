@@ -16,7 +16,6 @@ import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 
 import java.time.LocalDateTime;
@@ -37,6 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DocumentController.class)
 public class DocumentControllerTest {
+
+    private static final String DOCUMENTS_API_URL = "/api/v1/documents";
 
     @Autowired
     private MockMvc mvc;
@@ -89,7 +90,7 @@ public class DocumentControllerTest {
     public void should_get_all_documents() throws Exception {
         when(documentService.getAllDocuments(pageable)).thenReturn(mockPage);
 
-        ResultActions result = mvc.perform(get("/api/v1/document")
+        ResultActions result = mvc.perform(get(DOCUMENTS_API_URL)
                 .param("page", "0")
                 .param("size", "10"));
 
@@ -116,7 +117,7 @@ public class DocumentControllerTest {
     public void should_get_document_by_id() throws Exception {
         when(documentService.findDocumentById(1L)).thenReturn(Optional.ofNullable(mockDocuments.getFirst()));
 
-        mvc.perform(get("/api/v1/document/1"))
+        mvc.perform(get(DOCUMENTS_API_URL + "/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.documentId").value(1))
@@ -132,10 +133,13 @@ public class DocumentControllerTest {
         when(documentService.findDocumentById(nonExistentId))
                 .thenThrow(new NoSuchElementException("Document not found"));
 
-        mvc.perform(get("/api/v1/document/{id}", nonExistentId))
+        mvc.perform(get(DOCUMENTS_API_URL + "/{id}", nonExistentId))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("Document not found"));
-
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value("NOT_FOUND"))
+                .andExpect(jsonPath("$.field").value("Entity Not Found"))
+                .andExpect(jsonPath("$.errors").isArray())
+                .andExpect(jsonPath("$.errors[0]").value("Document not found"));
         verify(documentService).findDocumentById(nonExistentId);
     }
 
@@ -145,7 +149,7 @@ public class DocumentControllerTest {
 
         when(documentService.findByOwner(ownerId, pageable)).thenReturn(mockPage);
 
-        mvc.perform(get("/api/v1/document/owner/{id}", ownerId)
+        mvc.perform(get(DOCUMENTS_API_URL + "/owner/{id}", ownerId)
                         .param("page", "0")
                     .param("size", "10"))
                 .andExpect(status().isOk())
@@ -167,7 +171,7 @@ public class DocumentControllerTest {
 
         when(documentService.findByFolder(folderId, pageable)).thenReturn(mockPage);
 
-        mvc.perform(get("/api/v1/document/folder/{id}", folderId)
+        mvc.perform(get(DOCUMENTS_API_URL + "/folder/{id}", folderId)
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -210,7 +214,7 @@ public class DocumentControllerTest {
 
         when(documentService.createDocument(any(DocumentCreateDto.class))).thenReturn(createdDocument);
 
-        mvc.perform(post("/api/v1/document")
+        mvc.perform(post(DOCUMENTS_API_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\n" +
                                 "    \"title\": \"New Document\",\n" +
@@ -239,7 +243,7 @@ public class DocumentControllerTest {
                 "    \"documentType\": \"MEDIA\"\n" +
                 "}";
 
-        mvc.perform(post("/api/v1/document")
+        mvc.perform(post(DOCUMENTS_API_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidDocumentJson))
                 .andExpect(status().isBadRequest());
@@ -266,7 +270,7 @@ public class DocumentControllerTest {
 
         when(documentService.updateDocument(any(Document.class))).thenReturn(updatedDocument);
 
-        mvc.perform(put("/api/v1/document/{documentId}", documentId)
+        mvc.perform(put(DOCUMENTS_API_URL + "/{documentId}", documentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 "{\n" +
@@ -299,7 +303,7 @@ public class DocumentControllerTest {
         Long documentId = 2L;
         when(documentService.deleteDocument(documentId)).thenReturn(true);
 
-        mvc.perform(delete("/api/v1/document/2"))
+        mvc.perform(delete(DOCUMENTS_API_URL + "/2"))
                 .andExpect(status().isNoContent());
 
         verify(documentService).deleteDocument(documentId);
@@ -311,7 +315,7 @@ public class DocumentControllerTest {
         Long nonExistentId = 33L; // Non-existent document ID
         when(documentService.deleteDocument(nonExistentId)).thenReturn(false);
 
-        mvc.perform(delete("/api/v1/document/{id}", nonExistentId))
+        mvc.perform(delete(DOCUMENTS_API_URL + "/{id}", nonExistentId))
                 .andExpect(status().isNotFound());
 
         verify(documentService).deleteDocument(nonExistentId);

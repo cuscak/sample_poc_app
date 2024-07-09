@@ -94,6 +94,6 @@ public class DocumentControllerIntegrationTest {
     }
 
     private String createURLWithPort(String uri) {
-        return "http://localhost:" + port + "/api/v1/document" + uri;
+        return "http://localhost:" + port + "/api/v1/documents" + uri;
     }
 }

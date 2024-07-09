@@ -75,12 +75,10 @@ public class FolderController {
      * @return a response entity with HTTP status indicating the result of the operation
      */
     @DeleteMapping("/{folderId}")
-    public ResponseEntity<Void> deleteFolder(@PathVariable("folderId") Long folderId){
-        boolean isDeleted = folderService.deleteFolder(folderId);
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Boolean> deleteFolder(@PathVariable("folderId") Long folderId){
+        return new ResponseEntity<>(
+                folderService.deleteFolder(folderId),
+                HttpStatus.NO_CONTENT
+        );
     }
 }
