@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/document")
+@RequestMapping("/api/v1/documents")
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -28,9 +28,9 @@ public class DocumentController {
         return documentService.getAllDocuments(pageable);
     }
 
-    @GetMapping("/{id}")
-    public Document findDocumentById(@PathVariable("id") Long id){
-        Optional<Document> doc = documentService.findDocumentById(id);
+    @GetMapping("/{documentId}")
+    public Document findDocumentById(@PathVariable("documentId") Long documentId){
+        Optional<Document> doc = documentService.findDocumentById(documentId);
         if(doc.isPresent()){
             return doc.get();
         } else {
@@ -40,14 +40,14 @@ public class DocumentController {
         //return ResponseEntity.of(documentService.findDocumentById(id));
     }
 
-    @GetMapping("/owner/{id}")
-    public Page<Document> findByOwner(@PathVariable("id") Long id, Pageable pageable){
-        return documentService.findByOwner(id, pageable);
+    @GetMapping("/owner/{ownerId}")
+    public Page<Document> findByOwner(@PathVariable("ownerId") Long ownerId, Pageable pageable){
+        return documentService.findByOwner(ownerId, pageable);
     }
 
-    @GetMapping("/folder/{id}")
-    public Page<Document> findAllByFolder(@PathVariable("id") Long id, Pageable pageable){
-        return documentService.findByFolder(id, pageable);
+    @GetMapping("/folder/{folderId}")
+    public Page<Document> findAllByFolder(@PathVariable("folderId") Long folderId, Pageable pageable){
+        return documentService.findByFolder(folderId, pageable);
     }
 
     @PostMapping
@@ -66,9 +66,9 @@ public class DocumentController {
         );
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id) {
-        boolean isDeleted = documentService.deleteDocument(id);
+    @DeleteMapping("/{documentId}")
+    public ResponseEntity<Void> deleteDocument(@PathVariable("documentId") Long documentId) {
+        boolean isDeleted = documentService.deleteDocument(documentId);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
         } else {
